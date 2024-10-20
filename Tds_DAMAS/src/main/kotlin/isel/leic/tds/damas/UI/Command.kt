@@ -31,3 +31,5 @@ fun getCommands(storage: Storage<String, Board>) = mapOf(
         }
     }
 )
+//temos um problema, pelo q estou a perceber vamos ter de fazer essa merda do mongo ou o crlh para guardar a informaçao, se virem agr o getCOmmands tem 1 parametro e o cassiano passa na mais uma merda do mongoDatabase, n sei se existe uma forma mais simples de fazer aquilo
+
