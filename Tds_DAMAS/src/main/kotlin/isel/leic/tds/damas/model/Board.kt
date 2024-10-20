@@ -34,4 +34,9 @@ fun initialBoard(): Board {
     return Board(init, Player.w)
 }
 
+operator fun Board.get(position: Square): Player? = moves[position]?.player // Verifica qual é o player dentro do Quadrado Indicado
+
+
+
+
 
