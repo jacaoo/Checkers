@@ -26,7 +26,8 @@ fun getCommands(storage: Storage<String, Board>) = mapOf(
             checkNotNull(g){ " Game not created. "} //se o jogo n for criado e null e da illegal state
             val s = storage.read(id = g.id) //basicamente esta função read da interface sotrage lê o id que passas como parametro e aqui, basicamente colocamos no s o id de g porque precisamos da informaçao de como se encontra o tabuleiro g
             require(s != null) { "Game not created." } //n percebi mt bem mas sem isto nunca se tinha a certeza se o board s era null ou nao
-            return g.copy(board = s) //returna o mesmo game so que com o board ja alterado com a jogada q veio do outro terminal de comandos
+            return g.copy(board = s) //returna o mesmo game so que com o board atualizado com a jogada feita no outro terminal de comandos
+            
         }
     }
 )
