@@ -29,6 +29,7 @@ fun initialBoard(): Board {
             reverse--
             if (pieces == playerPieces) break
         }
+        else reverse--
     }
     return Board(init, Player.w)
 }
