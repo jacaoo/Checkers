@@ -1,7 +1,7 @@
-import isel.leic.tds.damas.model.*
+package isel.leic.tds.damas.model
 
 const val BOARD_DIM = 8
-const val BOARD_CELLS = BOARD_DIM*BOARD_DIM
+const val BOARD_CELLS = BOARD_DIM * BOARD_DIM
 const val playerPieces = 12
 
 enum class Player{
@@ -16,23 +16,6 @@ fun Moves.renew (old: Square, new: Piece?) = this.plus(Move(old, new)) // Serve 
 
 class Board(val moves: Moves, val player: Player)
 
-fun initialBoard(): Board {
-    val init = emptyMap<Square, Piece?>()
-    Square.values.forEach { init.renew(it, null) }
-    var pieces = 0
-    var reverse = BOARD_CELLS - 1
-    for ( i in 0..<BOARD_CELLS-1) {
-        if (Square(i).black){
-            init.renew(Square.values[i], Piece(Player.b))
-            init.renew(Square.values[reverse], Piece(Player.w))
-            pieces++
-            reverse--
-            if (pieces == playerPieces) break
-        }
-        else reverse--
-    }
-    return Board(init, Player.w)
-}
 
 operator fun Board.get(position: Square): Player? = moves[position]?.player // Verifica qual é o player dentro do Quadrado Indicado
 
