@@ -1,6 +1,5 @@
 package isel.leic.tds.damas.model
 
-import BOARD_DIM
 
 @JvmInline
 value class Column(val index: Int){

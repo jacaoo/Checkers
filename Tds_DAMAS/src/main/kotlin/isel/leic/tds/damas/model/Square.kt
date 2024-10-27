@@ -1,7 +1,5 @@
 package isel.leic.tds.damas.model
 
-import BOARD_DIM
-
 class Square (val index: Int) {
     val row get() = Row(index / BOARD_DIM)
     val column get() = Column(index % BOARD_DIM)

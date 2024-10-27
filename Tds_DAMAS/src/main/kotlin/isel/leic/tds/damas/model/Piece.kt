@@ -1,5 +1,4 @@
 package isel.leic.tds.damas.model
-import Player
 
 
 class Piece(val player: Player) {
