@@ -1,8 +1,8 @@
 package isel.leic.tds.damas.storage
 
-interface Storage<K,T> {
-    fun create(id: K, value: T)
-    fun read(id: K): T?
-    fun update(id: K, value: T)
-    fun delete(id: K)
+interface Storage<Key,Data> {
+    fun create(id: Key, data: Data)
+    fun read(id: Key): Data?
+    fun update(id: Key, data: Data)
+    fun delete(id: Key)
 }

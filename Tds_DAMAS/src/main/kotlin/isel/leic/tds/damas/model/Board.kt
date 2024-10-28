@@ -16,7 +16,9 @@ typealias Moves = Map<Square, Piece?> // É uma espécie de lista para armazenar
 
 fun Moves.renew (old: Square, new: Piece?) = this.plus(Move(old, new)) // Serve para adicionar a peça no board
 
-class Board(val moves: Moves, val player: Player)
+sealed class Board(val moves: Moves, val player: Player)
+class BoardRun(mvs: Moves, val turn: Player) : Board(mvs, turn)
+class BoardWin(mvs: Moves, val winner: Player) : Board(mvs, winner)
 
 operator fun Board.get(position: Square): Player? = moves[position]?.player // Verifica qual é o player dentro do Quadrado Indicado
 
@@ -35,7 +37,7 @@ fun initialBoard(): Board {
         }
         else reverse--
     }
-    return Board(init,Player.w)
+    return BoardRun(init,Player.w)
 }
 
 
