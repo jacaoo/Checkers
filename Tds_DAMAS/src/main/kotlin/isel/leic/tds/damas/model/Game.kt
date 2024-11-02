@@ -1,7 +1,5 @@
 package isel.leic.tds.damas.model
-import Board
-import Player
-import initialBoard
+
 
 data class Game (
     val id: String, //nome do jogo
@@ -10,11 +8,10 @@ data class Game (
 )
 
 fun createGame(id: String) = Game(id, Player.w, initialBoard())
-/*
+
 fun Game.play(from: Square, to: Square, board: Board): Game {
-    val newBoard = board.play(from,to)
-    return copy(board = newBoard)
+    val newBoard = board.play(from,to,board.player)
+    return copy(board = newBoard, player = board.player)
 }
 
-fun Game.show() = this.board.print(playerID)
-*/
+
