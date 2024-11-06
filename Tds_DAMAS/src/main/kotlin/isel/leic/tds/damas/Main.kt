@@ -11,6 +11,7 @@ fun main(){
         if (cmd == null) println(" Invalid Command $name ")
         else try {
             game = cmd.execute(args, game) ?: break
+            if (cmd.isTerminate) break
             listg.add(game)
         }
         catch (e : IllegalArgumentException) {
