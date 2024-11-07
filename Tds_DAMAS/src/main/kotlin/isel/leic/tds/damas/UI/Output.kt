@@ -7,7 +7,15 @@ fun Game.show(player: Player) {
     val list = board.moves.keys.mapIndexed { index, square -> // Este val serve para criar a lista com as peças nos sítios certos e caso nao tiver peça num board black mete-se -
         val value = square.black
         if (value && board[Square(index)] == null) "-"
-        else "${board[Square(index)]}"
+        else {
+            if(board.moves.values.toList()[index] is Queen){
+
+                board[Square(index)].toString().uppercase()
+            }
+            else{
+                "${board[Square(index)]}"
+            }
+        }
     }
     for (i in BOARD_DIM downTo 1) {
         if (i == BOARD_DIM) println(
