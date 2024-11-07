@@ -1,7 +1,6 @@
 package isel.leic.tds.damas.model
 
 import com.sun.org.apache.xalan.internal.xsltc.runtime.BasisLibrary.copy
-import kotlin.math.abs
 import kotlin.math.absoluteValue
 
 const val BOARD_DIM = 8
@@ -12,7 +11,8 @@ const val playerPieces = 12
 
 enum class Player{
     w, b;
-    val other get() = if(this == w) b else w // atualizar val other
+    val other get() = if(this == w) b else w
+
 }
 typealias Move = Pair<Square, Piece?> // É para associar um quadrado com uma peça ( w, b )
 
@@ -33,8 +33,8 @@ fun initialBoard(): Board {
     var reverse = Square.values.size - 1
     for (i in 0..<Square.values.size - 1) {
         if ( Square(i).black ) {
-            init = init.renew(Square.values[i],Piece(Player.b))
-            init = init.renew(Square.values[reverse],Piece(Player.w))
+            init = init.renew(Square.values[i],Pawn(Player.b))
+            init = init.renew(Square.values[reverse],Pawn(Player.w))
             reverse--
             pieces++
             if (pieces == playerPieces) break
@@ -51,88 +51,65 @@ fun Board.play(from: Square, to: Square, player: Player): Board =
             val list = this.moves.values.toList()
             require(this.moves.keys.toList()[to.index].black && this.moves.keys.toList()[from.index].black)
             {"Invalid Play"}
-            if (list[from.index]?.player == Player.W || list[from.index]?.player == Player.B){
-                this.moveQueen(from, to, player)
-            }
-            else {
-                if (thereisaKill(player)) {
-                    val newBoard = this.exchangekill(from, to, player)
-                    if (checkQueen(to, player)) {
-                        val newqueen = newBoard.toQueen(to, player)
-                        if (newBoard.canKill(player)) {
-                            BoardRun(newqueen.moves, newqueen.player)
-                        } else BoardRun(
-                            newqueen.moves,
-                            newqueen.player.other
-                        )// fazer esta função de modo a que passe o to atual para Queen
-                    } else {
-                        if (newBoard.canKill(player)) {
-                            BoardRun(newBoard.moves, newBoard.player)
-                        } else BoardRun(newBoard.moves, newBoard.player.other)
-                    }
-                } else {
-                    if (player == Player.w) {
-                        require(
-                            this.moves.keys.indexOf(to) == this.moves.keys.indexOf(from) - (BOARD_DIM - 1) ||
-                                    this.moves.keys.indexOf(to) == this.moves.keys.indexOf(from) - (BOARD_DIM + 1) && Square(
-                                this.moves.keys.indexOf(to)
-                            ).black
-                        ) { "Invalid Position" }
-                        require(list[this.moves.keys.indexOf(to)] == null) { "Position already occupied" }
-                        val newb = this.exchange(from, to, player)
-                        if (checkQueen(to, player)) {
-                            newb.toQueen(to, player) // fazer esta função de modo a que passe o to atual para Queen
-                        } else newb
-                    } else {
-                        require(
-                            this.moves.keys.indexOf(to) == this.moves.keys.indexOf(from) + (BOARD_DIM - 1) ||
-                                    this.moves.keys.indexOf(to) == this.moves.keys.indexOf(from) + (BOARD_DIM + 1) && Square(
-                                this.moves.keys.indexOf(to)
-                            ).black
-                        ) { "Invalid Position" }
-                        require(list[this.moves.keys.indexOf(to)] == null) { "Position already occupied" }
-                        val newb1 = this.exchange(from, to,player)
-                        if (checkQueen(to, player)) {
-                            newb1.toQueen(to, player)
-                        } else newb1
-                    }
+            if (ThereIsAKill(player) || this.moves.values.toList()[from.index] is Queen ){
+                var newBoard = this
+                newBoard = newBoard.exchangekill(from, to, player)
+                if (newBoard.ThereIsAKill(player)) {
+                    newBoard = BoardRun(newBoard.moves, newBoard.player)
                 }
+                else newBoard = BoardRun(newBoard.moves, newBoard.player.other)
+                newBoard
+
+            } else {
+                val piece =list[from.index]
+                require (piece != null && piece.canMove(to, from, this) ){"Invalid Position"}
+                val newb = this.exchange(from, to)
+                newb
+            }
             }
         }
-    }
 
-fun Board.checkWin() : Boolean {
-    val list = this.moves.values.toList()
-    val piececount = mutableListOf(0,0)
-    for (i in list) {
-        if (i == null) continue
-        if (i.player == Player.w) piececount[0]++
-        else piececount[1]++
-    }
-    return !(piececount[0] > 0 && piececount[1] > 0)
-}
 
 // Função exchangekill corrigida
 fun Board.exchangekill(from: Square, to: Square, player: Player): Board {
     val newMoves = this.moves.toMutableMap()
-    if (player == Player.w) {
-        if (this.moves.keys.indexOf(from) % BOARD_DIM > this.moves.keys.indexOf(to) % BOARD_DIM)
-            newMoves[Square(this.moves.keys.indexOf(from) - (BOARD_DIM + 1))] = null
-        else newMoves[Square(this.moves.keys.indexOf(from) - (BOARD_DIM - 1))] = null
-    }
-    else {
-        if (this.moves.keys.indexOf(from) % BOARD_DIM > this.moves.keys.indexOf(to) % BOARD_DIM)
-            newMoves[Square(this.moves.keys.indexOf(from) + BOARD_DIM - 1)] = null
-        else newMoves[Square(this.moves.keys.indexOf(from) + (BOARD_DIM + 1))] = null
-    }
-    newMoves[to] = Piece(this.player)
-    newMoves[from] = null
-    return BoardRun(newMoves,player)
+    val piece = this.moves.values.toList()[from.index]
+    if (piece != null && piece.canKill(to, from, this)) {
+        if (piece is Pawn) {
+
+            if (player == Player.w) {
+                if (this.moves.keys.indexOf(from) % BOARD_DIM > this.moves.keys.indexOf(to) % BOARD_DIM)
+                    newMoves[Square(this.moves.keys.indexOf(from) - (BOARD_DIM + 1))] = null
+                else newMoves[Square(this.moves.keys.indexOf(from) - (BOARD_DIM - 1))] = null
+            } else {
+                if (this.moves.keys.indexOf(from) % BOARD_DIM > this.moves.keys.indexOf(to) % BOARD_DIM)
+                    newMoves[Square(this.moves.keys.indexOf(from) + BOARD_DIM - 1)] = null
+                else newMoves[Square(this.moves.keys.indexOf(from) + (BOARD_DIM + 1))] = null
+            }
+
+            if(checkQueen(to, player)) {
+                newMoves[to] = Queen(this.player)
+            }else{
+                newMoves[to] = newMoves[from]
+            }
+            newMoves[from] = null
+            return BoardRun(newMoves, player)
+
+        } else {
+
+            val stepper = checkquarter(from,to)
+            newMoves[Square(this.moves.keys.indexOf(to) - stepper)] = null
+            newMoves[to] = Queen(this.player)
+            newMoves[from] = null
+            return BoardRun(newMoves, player)
+
+
+        }
+    }else return this
 }
 
-fun Board.thereisaKill(player: Player): Boolean {
+fun Board.ThereIsAKill(player: Player): Boolean {
     val list = this.moves.toMutableMap()
-
     for ((sqr, pl) in list) {
         if (pl != null && pl.player == player) {
             if (player == Player.w) {
@@ -163,34 +140,27 @@ fun Board.thereisaKill(player: Player): Boolean {
     return false
 }
 
-fun Board.exchange(from: Square, to: Square, player: Player): Board {
+
+fun Board.exchange(from: Square, to: Square): Board {
     val newMoves = this.moves.toMutableMap()
-    newMoves[to] = Piece(player)
+    if(checkQueen(to,player)){
+        newMoves[to] = Queen(player)
+    }
+    else newMoves[to] = newMoves[from]
+
     newMoves[from] = null
     val newBoard = BoardRun(newMoves,player.other)
     return newBoard
 }
 
-fun Board.moveQueen(from: Square,to: Square,player: Player): Board {
-    require(to.index in 0..<this.moves.keys.size) { " Position not in Board "}
-    require(to.black) { " Can´t move on a non black square "}
-    require( this.moves.values.toList()[to.index] == null ) {" Position already occupied "}
-    require( abs((to.index - from.index)) % (BOARD_DIM - 1) == 0 || abs(to.index - from.index) % (BOARD_DIM + 1) == 0 )
-    {"Queen can only move in diagonals "}
-    val steper = checkquarter(from, to) // Atribuir valor 7, -7 , 9 , -9
-    val dif = abs((from.row.index - to.row.index))
-    if (dif > 2){
-        for ( i in 1..dif - 2) {
-            val num = from.index + i * steper
-            require(this.moves.values.toList()[num] == null) {" Invalid Move, there is a piece on the way "}
-        }
+fun checkQueen(to: Square, player: Player) : Boolean {
+    return if (player == Player.b) {
+        to.row.index == BOARD_DIM - 1
     }
-    return if (this.moves.values.toList()[(to.index - steper)]!!.player == player.other) {
-        val newboard1 = this.Kill(from,to, player) // Adaptar o kill para as queens conseguirem matar
-        newboard1
+    else if(player == Player.w){
+        to.row.index == 0
     }
-    else if (this.moves.values.toList()[(to.index - steper)]!!.player == player) throw IllegalArgumentException("Suicide is not an option")
-    else this.exchange(from,to,this.player.toQueen)
+    else false
 }
 
 
