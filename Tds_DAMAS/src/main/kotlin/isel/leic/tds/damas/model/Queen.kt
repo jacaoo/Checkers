@@ -29,7 +29,7 @@ class Queen(player: Player ): Piece(player) {
         val steper = checkquarter(from, to)
         val dif = abs(from.row.index - to.row.index)
         if (dif > 2){ // Para verificar se o to for na 3 casa
-            for ( i in 1..dif - 2) {
+            for ( i in 1..dif - 2) { // problema quando ha intervalo
                 val num = from.index + i * steper
                 require(board.moves.values.toList()[num] == null) {" Invalid Move, there is a piece on the way "}
             }
@@ -41,7 +41,7 @@ class Queen(player: Player ): Piece(player) {
 }
 
 
-private fun checkquarter(from: Square,to: Square): Int {
+fun checkquarter(from: Square,to: Square): Int {
     return if (from.row.index > to.row.index && from.column.index < to.column.index || from.row.index < to.row.index &&
         from.column.index > to.column.index) {
         if (from.row.index < to.row.index &&
