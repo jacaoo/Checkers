@@ -29,12 +29,20 @@ fun String.toSquareOrNull(): Square? {
     else return Square(Row(rindex),Column(cindex))
 }
 
+
 fun String.toSquare(): Square? {
     if(this.length != 2) throw IllegalArgumentException()
     if (this.toSquareOrNull() == null) throw IllegalArgumentException()
     else return this.toSquareOrNull()
 }
 
+fun String.toSquarenotNull(): Square {
+    val row = this[0]
+    val column = this[1]
+    val rindex = BOARD_DIM - (row - '0')
+    val cindex = column - 'a'
+    return Square(Row(rindex),Column(cindex))
+}
 fun CreateSquares(): List<Square> {
     val list = mutableListOf<Square>()
     var index = 0
