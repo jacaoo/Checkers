@@ -12,54 +12,55 @@ import androidx.compose.runtime.identityHashCode
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.times
 import tds.model.*
 import tds.storage.*
 
+
 val BACKGROUND_COLOR = Color(180, 100, 25) // cor laranja
 
 @Composable
-fun BoardWithBorder(board: Board) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize() // Preenche toda a tela
-            .background(BACKGROUND_COLOR) // Define o fundo laranja
-            .padding(30.dp) // Adiciona padding para afastar do limite da tela
-    ) {
-        Row {
-            Spacer(modifier = Modifier.width(CELL_SIZE/2 + 7.dp)) // Espaço para alinhar com os números
-            repeat(BOARD_DIM) { i ->
-                Text(
-                    text = ('a' + i).toString(),
-                    fontSize = 25.sp,
-                )
-                Spacer(modifier = Modifier.width(CELL_SIZE - 10.dp)) // Espaço para alinhar com os números
+fun StatusBar(clash: Clash){
+    Row(
+        Modifier
+            .background(BACKGROUND_COLOR)
+            .offset(30.dp, 5.dp)
+            .fillMaxWidth()
+            .height(40.dp)
+
+
+    ){
+        if (clash is ClashRun) {
+            Text("Game:${clash.id}")
+            Spacer(Modifier.width(CELL_SIZE*2 + 15.dp))
+
+            if (clash.sideplayer == Player.w) {
+                Text("You:WHITE")
+                Spacer(Modifier.width(CELL_SIZE*2 + 15.dp))
+            } else {
+                Text("You:BLACK")
+                Spacer(Modifier.width(CELL_SIZE*2 + 15.dp))
             }
-        }
-        Row {
-            Column {
-                repeat(BOARD_DIM) { i ->
-                    Text(
-                        text = (BOARD_DIM - i).toString(),
-                        fontSize = 20.sp,
-                        modifier = Modifier
-                            .padding(start = 10.dp, top = 10.dp)
-                    )
-                }
+            if (clash.game.board is BoardRun) {
+                if (clash.sideplayer == clash.game.board.turn) {
+                    Text("Your turn")
+                } else Text("Waiting..")
             }
-            Box {
-                GridView(moves = board.moves) {
-                }
-            }
+        } else {
+            Text("Start a new game")
         }
     }
+
 }
 
 @Composable
 @Preview
-fun PreviewBoardWithBorder() {
-    val board = initialBoard()
-    BoardWithBorder(board)
+fun StatusBarPreview() {
+
 }
+
+
+

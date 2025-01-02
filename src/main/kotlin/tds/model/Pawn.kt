@@ -99,9 +99,14 @@ class Pawn (player: Player) : Piece(player) {
         }
     }
 }
+
 fun getPawn(sq: Square) : Pawn?{
+    val rowWf = playerPieces/6
+    val rowBi = rowWf+3
     if(!sq.black ) return null
-    if(sq.row.index  in 0 .. 2) return Pawn(Player.b)
-    else if (sq.row.index  in BOARD_DIM - 3..BOARD_DIM-1 ) return Pawn(Player.w)
+    if(sq.row.index  in 0 .. rowWf) return Pawn(Player.b)
+    else if (sq.row.index  in rowBi..rowBi+rowWf) return Pawn(Player.w)
     else return null
 }
+
+

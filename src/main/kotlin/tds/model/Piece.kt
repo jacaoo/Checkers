@@ -1,5 +1,7 @@
 package tds.model
 
+import kotlin.math.abs
+
 
 abstract class Piece(val player: Player) {
     abstract fun canMove(to: Square, from: Square, board: Board): Boolean
@@ -8,3 +10,20 @@ abstract class Piece(val player: Player) {
     abstract fun genericCanMove(from: Square, board: Board): Boolean
 }
 
+// Foi criada esta função e têm que ser alterada para funcionar caso seja uma queen
+fun Piece.canMove_nd(to: Square, from: Square, moves: Moves): Boolean {
+    // Verifique se o destino está dentro dos limites do tabuleiro
+//    if (!to.isValid()) return false
+
+    // Verifique se o destino está vazio
+    if (moves[to] != null) return false
+
+    // Regra para movimentos diagonais simples (1 casa)
+    val deltaRow = to.row.index - from.row.index
+    val deltaCol = to.column.index - from.column.index
+
+    return abs(deltaRow) == 1 && abs(deltaCol) == 1 &&
+            ((this.player == Player.w && deltaRow == -1) ||
+                    (this.player == Player.b && deltaRow == 1))
+
+}

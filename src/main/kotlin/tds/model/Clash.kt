@@ -1,11 +1,13 @@
 package tds.model
-import tds.storage.TextFileStorage
-import tds.storage.MongoStorage
+import tds.storage.*
 
-open class Clash( val gs: TextFileStorage<Name, Game>)
+typealias GameStorage = Storage<Name,Game>
+
+
+open class Clash( val gs: GameStorage)
 
 class ClashRun(
-    gs: TextFileStorage<Name,Game>,
+    gs: GameStorage,
     val id: Name,
     val sideplayer: Player,
     val game: Game
@@ -47,4 +49,11 @@ fun Clash.refresh() = runOper {
     check(this.game.board != gameAfter.board) { "No changes" }
     gameAfter
 }
+
+class NoChangesException : IllegalStateException("No changes")
+class GameDeletedException : IllegalStateException("Game deleted")
+
+fun Clash.canNewBoard() = this is ClashRun && game.board is BoardWin // Serve para ver se o jogo já terminou porque não existe nenhuma class ClashWinner
+
+
 
