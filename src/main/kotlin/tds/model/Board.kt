@@ -1,9 +1,12 @@
 package tds.model
 
-const val BOARD_DIM = 8
-const val BOARD_CELLS = BOARD_DIM * BOARD_DIM
+import tds.AppProperties
 
-const val playerPieces = 12
+val BOARD_DIM = AppProperties.p.getProperty("BOARD_DIM").toInt()
+
+val BOARD_CELLS = BOARD_DIM * BOARD_DIM
+
+val playerPieces = AppProperties.p.getProperty("playerPieces").toInt()
 
 
 

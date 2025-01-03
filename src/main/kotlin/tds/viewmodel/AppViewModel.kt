@@ -8,6 +8,7 @@ import kotlinx.coroutines.*
 import tds.storage.MongoDriver
 import tds.storage.*
 import tds.model.*
+import tds.view.InputName
 
 class AppViewModel (driver: MongoDriver, val scope: CoroutineScope) {
 
@@ -16,15 +17,18 @@ class AppViewModel (driver: MongoDriver, val scope: CoroutineScope) {
         MongoStorage<Name, Game>("games", driver, GameSerializer)  // Para guardar as coisas na base de dados do Mongo
 
     var clash by mutableStateOf(Clash(storage))  // Clash itself
-
+    var inputName by mutableStateOf<InputName?>(null) //StartOrJoinDialog
+        private set
     var errorMessage by mutableStateOf<String?>(null) //ErrorDialog state
         private set
     var waitingJob by mutableStateOf<Job?>(null) // É utilizado para os tempos de espera entre jogadas de cada player
     val isWaiting: Boolean get() = waitingJob != null // Complemento da linha de cima
 
     val newAvailable: Boolean get() = clash.canNewBoard()
+
     private val turnAvailable: Boolean
         get() = (board as? BoardRun)?.turn == sidePlayer || newAvailable
+
 
     val board : Board get() = (clash as ClashRun).game.board
     val hasClash: Boolean get() = clash is ClashRun // Isto vai servir para definir o estado do jogo se o player atual começou um clash
@@ -48,8 +52,47 @@ class AppViewModel (driver: MongoDriver, val scope: CoroutineScope) {
         //waitForOtherSide()
     }
 
+    private fun waitForOtherSide() {
+        if (turnAvailable) return
+        waitingJob = scope.launch(Dispatchers.IO) {
+            do {
+                delay(3000)
+                try { clash = clash.refresh() }
+                catch (e: NoChangesException) { /* Ignore */ }
+                catch (e: Exception) {
+                    errorMessage = e.message
+                    if (e is GameDeletedException) clash = Clash(storage)
+                }
+            } while (!turnAvailable)
+            waitingJob = null
+        }
+    }
+
     fun refresh() = exec(Clash::refresh)
 
+    //fun newBoard(): Unit = exec(Clash::newBoard)
 
+    fun openStartDialog() {
+        inputName = InputName.ForStart
+    }
+
+    fun openJoinDialog() {
+        inputName = InputName.ForJoin
+    }
+
+
+    fun closeStartOrJoinDialog() { inputName = null }
+
+    fun start(name: Name) {
+        closeStartOrJoinDialog()
+        exec { start(name) }
+        waitForOtherSide()
+    }
+
+    fun join(name: Name) {
+        closeStartOrJoinDialog()
+        exec { joinClash(name) }
+        waitForOtherSide()
+    }
 
 }
