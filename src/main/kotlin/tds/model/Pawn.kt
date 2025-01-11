@@ -98,6 +98,48 @@ class Pawn (player: Player) : Piece(player) {
 
         }
     }
+    override fun canMove_nd(from: Square, moves: Moves): MutableList<Square> {
+        val possibleMoves = mutableListOf<Square>()
+
+        val fromSquare = moves.values.toList()[from.index]
+        if (fromSquare != null) {
+            val board_dim = getBycolour(fromSquare)
+            val leftDiagonal = from.index - board_dim - 1
+            val rightDiagonal = from.index - board_dim + 1
+            if (moves.values.toList()[rightDiagonal] == null && moves.keys.toList()[rightDiagonal].black) {
+                possibleMoves.add(moves.keys.toList()[rightDiagonal])
+            }
+            if (moves.values.toList()[leftDiagonal] == null && moves.keys.toList()[leftDiagonal].black) {
+                possibleMoves.add(moves.keys.toList()[leftDiagonal])
+            }
+            return possibleMoves
+        }
+        else{
+            return mutableListOf<Square>()
+        }
+    }
+
+    override fun possiblekill(from: Square, board: Board): List<Square> {
+        val list = board.moves.values.toList()
+        val possiblemoves2 = mutableListOf<Square>()
+
+        //este if serve apenas teste
+        if(from.index != 17 && from.index > 16) {
+            if (list[(from.index - (BOARD_DIM*2+2))] == null) { // Para vêr se existe kill possível à esquerda
+                if (list[(from.index - (BOARD_DIM+1))] != null) {
+                    if(list[(from.index - (BOARD_DIM+1))]?.player == this.player.other) {
+                        possiblemoves2.add(Square(from.index - (BOARD_DIM*2+2)))
+                    }
+                }
+            }
+            if (list[(from.index - (BOARD_DIM*2-2))] == null) { // Para vêr se existe kill possível à direita
+                if(list[(from.index - (BOARD_DIM-1))]?.player == this.player.other) {
+                    possiblemoves2.add(Square(from.index - (BOARD_DIM*2-2)))
+                }
+            }
+        }
+        return possiblemoves2
+    }
 }
 
 fun getPawn(sq: Square) : Pawn?{
@@ -110,3 +152,10 @@ fun getPawn(sq: Square) : Pawn?{
 }
 
 
+fun getBycolour(piece : Piece): Int{
+    if(piece.player == Player.w ) {
+        return BOARD_DIM
+    }else{
+        return - BOARD_DIM
+    }
+}

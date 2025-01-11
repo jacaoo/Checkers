@@ -1,9 +1,7 @@
 package tds.view
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Text
@@ -12,69 +10,64 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import tds.model.*
 
 
-val CELL_SIZE = 50.dp
-val LINE_WIDTH = 5.dp
+val CELL_SIZE = 55.dp
+val LINE_WIDTH = 7.dp
 val GRID_WIDTH = CELL_SIZE * BOARD_DIM + LINE_WIDTH * (BOARD_DIM - 1)
 
 
 @Composable
-fun GridView(moves: Moves, onClickCell: (Square)->Unit, toOnClickCell: (Square)->Unit, selectedSQR : Square?) {
-    // Identificação do tabuleiro
-
-    Box( // Foi criada uma box para não ter espaços brancos no jogo
+fun GridView(board: Board, onClickCell: (Square)->Unit, selectedSQR : Square?) {  //É passado aqui um board para não ter que haver mudança nas funções feitas na parte anterior
+    //GRID
+    Box(
         Modifier
-            .offset(0.dp, 37.dp)
-            .height(435.dp)
-            .width(435.dp)
+            .size(GRID_WIDTH)
+            .background(BACKGROUND_COLOR),
 
-            .background(BACKGROUND_COLOR)
-
-
-
-    ){
-
+        //contentAlignment = Alignment.Center
+    )
+    {
+        //LINHA DE LETRAS
         Row(
-            modifier = Modifier,
-            horizontalArrangement = Arrangement.spacedBy(CELL_SIZE - 8.dp ) // Simplesmente para fazer o espaço entre cada letra
+            Modifier
+            .padding(start = CELL_SIZE - LINE_WIDTH), // Ajustar alinhamento inicial
+        horizontalArrangement = Arrangement.spacedBy(CELL_SIZE - 10.dp)// Simplesmente para fazer o espaço entre cada letra
         ){
             for(i in 0..<BOARD_DIM) {
                 val actualLetter = ('a' + i).toString()
                 Text(
                     text = actualLetter,
-                    fontSize = 15.sp,
-                    modifier = Modifier
-                        .offset(37.dp, 0.dp)
+                    fontSize = 18.sp,
                 )
             }
         }
+        //COLUNA DE NÚMEROS
         Column(
-            verticalArrangement = Arrangement.spacedBy(CELL_SIZE - 19.dp)
+            Modifier
+                .padding(top = CELL_SIZE - 10.dp) // Ajustar o número inicial
+                .offset(7.dp,0.dp), // Para centrar os números na coluna
+            verticalArrangement = Arrangement.spacedBy(CELL_SIZE - 25.dp)
         ){
             for (i in BOARD_DIM downTo 1) {
                 val actualNumb = i.toString()
                 Text(
                     text = actualNumb,
-                    fontSize = 15.sp,
-                    modifier = Modifier
-                        .offset(7.dp, CELL_SIZE - 18.dp)
+                    fontSize = 18.sp,
                 )
             }
         }
-
-
-        Column (
-
+        //TABULEIRO
+        Column(
             modifier = Modifier
-                .offset(x = 18.dp, y = 20.dp)
-
-
+                .align(Alignment.Center)
         ){
             repeat(BOARD_DIM) { lin ->
+
                 Row {
                     repeat(BOARD_DIM) { col ->
                         val square = Square(Row(lin), Column(col))
@@ -89,36 +82,33 @@ fun GridView(moves: Moves, onClickCell: (Square)->Unit, toOnClickCell: (Square)-
                                     else Color.Transparent
                                 )
                                 .clickable { onClickCell(square) },
-                            contentAlignment = Alignment.Center
+                            contentAlignment = Alignment.Center,
+
                         )
-
                         {
-                            if (selectedSQR != null && (square in moves.possibleMoves(selectedSQR))) {
-                                Box(
-                                    Modifier
-                                        .clip(CircleShape)
-                                        .size(35.dp)
-
-                                        .background(Color(88,132, 52))
-                                ){
-
+                            if (selectedSQR != null && board.moves.values.toList()[selectedSQR.index] != null) {
+                                if (square in board.possibleMoves2(selectedSQR)) {
+                                    Box(
+                                            Modifier
+                                                .clip(CircleShape)
+                                                .size(35.dp)
+                                                .background(Color(88, 132, 52))
+                                        ) {
+                                        }
+                                    }
                                 }
-                            }
 
-                            val piece = moves[square]
+                            val piece = board.moves[square]
                             PieceView(
                                 size = CELL_SIZE,
                                 piece = piece,
                                 onClick = { onClickCell(square) }
                             )
                         }
-
-
                     }
                 }
             }
         }
-
     }
 
 }
@@ -128,19 +118,9 @@ fun GridView(moves: Moves, onClickCell: (Square)->Unit, toOnClickCell: (Square)-
 fun GridView(){
     val emptymoves = emptyList<Square>().zip(emptyList<Piece>()).toMap() // Para ver o Grid inicial sem peças
     val board = initialBoard() // Para ver o Grid com as peças
-    GridView(board.moves, {}, {}, null)
+    GridView(board, {}, null)
 }
 
 
 
 
-
-fun main(){
-    val board = initialBoard()
-    val piece = board.moves.values.toList()[Square.values.indexOf("3a".toSquarenotNull())]
-    println(board.moves.values.toList())
-    val fromSquare = "6b".toSquarenotNull()
-    val moves = board.moves.possibleMoves(fromSquare)
-    println("Movimentos possíveis: ${moves.joinToString()}")
-
-}

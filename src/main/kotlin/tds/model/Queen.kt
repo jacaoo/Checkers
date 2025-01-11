@@ -42,7 +42,7 @@ class Queen(player: Player ): Piece(player) {
         require(from.black) { "Can´t use non black squares" }
         require(board.moves.values.toList()[from.index] != null) { "Empty Position" }
 
-        val allSteppers = listOf(7, -7, 9, -9)
+        val allSteppers = listOf((BOARD_DIM-1), -(BOARD_DIM-1), (BOARD_DIM+1), -(BOARD_DIM+1))
         for (steper in allSteppers) {
             val Difference = CheckLimits(from,steper, board)
             for( j in 1..Difference - 1){
@@ -70,6 +70,61 @@ class Queen(player: Player ): Piece(player) {
                             ||
                             board.moves.values.toList()[board.moves.keys.indexOf(from) + BOARD_DIM + 1] == null) )return true
         else return false
+    }
+    override fun canMove_nd(from: Square, moves: Moves): MutableList<Square> {
+
+        val steppers = arrayOf((BOARD_DIM-1), -(BOARD_DIM-1), (BOARD_DIM+1), -(BOARD_DIM+1))
+        val possibleMoves = mutableListOf<Square>()
+
+        for (i in steppers) {
+            for (j in 1..BOARD_DIM) {
+                val num = from.index +( i * j)
+                if (num in 0..<BOARD_CELLS) {
+                    val squareToCheck = moves.keys.toList()[from.index + (i * j)].index
+                    if (moves.values.toList()[squareToCheck] == null && moves.keys.toList()[squareToCheck].black) {
+                        println(moves.keys.toList()[from.index + (i * j)])
+                        possibleMoves.add(moves.keys.toList()[from.index + (i * j)])
+                    } else {
+                        break
+                    }
+                } else {
+                    break
+                }
+            }
+        }
+        return possibleMoves
+    }
+
+    override fun possiblekill(from: Square, board: Board): List<Square> {
+        val steppers = arrayOf((BOARD_DIM-1), -(BOARD_DIM-1), (BOARD_DIM+1), -(BOARD_DIM+1))
+        val possiblekills = mutableListOf<Square>()
+        val boardListPiece = board.moves.values.toList()
+        val boardListSquare = board.moves.keys.toList()
+
+        for (i in steppers) {
+            for (j in 1..BOARD_DIM) {
+                val num = from.index +( i * j)
+                if (num in 0..<BOARD_CELLS) {
+                    val squareToCheck = boardListSquare[from.index + (i * j)].index
+                    if (boardListPiece[squareToCheck] == null && boardListSquare[squareToCheck].black) {
+
+                        //possibleMoves.add(board.moves.keys.toList()[from.index + (i * j)])
+                    } else {
+                        val check = squareToCheck + i
+                        if (boardListSquare[squareToCheck].black && check in 0..<BOARD_CELLS) {
+                            if (boardListPiece[check] == null && boardListSquare[check].black) {
+                                possiblekills.add(boardListSquare[check])
+                                break
+                            }
+                        }
+                        else break
+                    }
+                } else {
+                    break
+                }
+            }
+        }
+        return possiblekills
     }
 }
 fun CheckLimits(from : Square, stepper: Int, board: Board) : Int{// returns an int based on the quadrant/diagonal (stepper), this functions calculates the amount of squares on that diagonal based on the row and column of the fromSquare

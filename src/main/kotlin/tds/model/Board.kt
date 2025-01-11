@@ -176,21 +176,27 @@ fun Board.IsLocked(player: Player): Boolean{
     return true
 
 }
+fun Board.possibleMoves2(from: Square): List<Square> {
+    val piece = this.moves.values.toList()[from.index]
 
-//Ter cuidado a usar isto
-fun Moves.possibleMoves(from: Square): List<Square> {
-    val piece = this.values.toList()[from.index]
-    require(piece != null) { "No piece found in the given square" }
-
-    val possibleMoves = mutableListOf<Square>()
-
-    for ((toSquare, toPiece) in this) {
-        // Verifique se o destino está vazio e se segue as regras de movimento
-        if (toPiece == null && piece.canMove_nd(toSquare, from, this)) {
-            possibleMoves.add(toSquare)
+    if(piece != null) {
+        if (!this.ThereIsAtLeastAKill(player)) {
+            val list = piece.canMove_nd(from, this.moves)
+            for (i in piece.possiblekill(from, this)) {
+                list.add(i)
+            }
+            return list
+        } else {
+            val list = mutableListOf<Square>()
+            for (i in piece.possiblekill(from, this)) {
+                list.add(i)
+            }
+            return list
         }
     }
-
-    // Retorna a lista de movimentos válidos
-    return possibleMoves
+    return emptyList()// retornar o que der para ser retornado, ja vejo
 }
+
+
+
+

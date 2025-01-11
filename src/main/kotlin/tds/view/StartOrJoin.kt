@@ -7,20 +7,19 @@ import tds.model.Name
 
 //Isto vai servir para o Jogador novo criar um jogo com um específico nome ou então para um outro jogador entrar com esse mesmo nome
 enum class InputName(val txt: String) {
-    ForStart("start"), ForJoin("join")
+    Start("start")
 }
 
 
 @Composable
-fun StartOrJoinDialog(
-    type: InputName,
+fun StartDialog(
     onCancel: ()->Unit,
     onAction: (Name)->Unit
 ) {
-    var name by remember { mutableStateOf("") }  // Name in edition
+    var name by remember { mutableStateOf("") }  // Nome do Jogo
     AlertDialog(
         onDismissRequest = onCancel,
-        title = { Text(text = "Name to ${type.txt}",
+        title = { Text(text = "Name of Game",
             style = MaterialTheme.typography.h5
         ) },
         text = { OutlinedTextField(value = name,
@@ -30,10 +29,10 @@ fun StartOrJoinDialog(
         confirmButton = {
             TextButton(enabled = Name.isValid(name),
                 onClick = { onAction(Name(name)) }
-            ) { Text(type.txt) }
+            ) { Text("Start") }
         },
         dismissButton = {
-            TextButton(onClick = onCancel){ Text("cancel") }
+            TextButton(onClick = onCancel){ Text("Cancel") }
         }
     )
 }

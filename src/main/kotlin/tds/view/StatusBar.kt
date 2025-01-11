@@ -23,16 +23,17 @@ import tds.storage.*
 val BACKGROUND_COLOR = Color(180, 100, 25) // cor laranja
 
 @Composable
-fun StatusBar(clash: Clash){
+fun StatusBar(game: Game){
     Row(
         Modifier
-            .background(BACKGROUND_COLOR)
-            .offset(30.dp, 5.dp)
-            .fillMaxWidth()
-            .height(40.dp)
+            .width(GRID_WIDTH)
+            .background(BACKGROUND_COLOR),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
 
 
     ){
+        /*
         if (clash is ClashRun) {
             Text("Game:${clash.id}")
             Spacer(Modifier.width(CELL_SIZE*2 + 15.dp))
@@ -52,6 +53,15 @@ fun StatusBar(clash: Clash){
         } else {
             Text("Start a new game")
         }
+
+         */
+        Text("Game:Null")
+        Spacer(Modifier.width(CELL_SIZE*2 + 15.dp))
+        Text("You:WHITE")
+        Spacer(Modifier.width(CELL_SIZE*2 + 15.dp))
+        Text("Your turn")
+
+
     }
 
 }
@@ -59,7 +69,7 @@ fun StatusBar(clash: Clash){
 @Composable
 @Preview
 fun StatusBarPreview() {
-
+    StatusBar(Game())
 }
 
 

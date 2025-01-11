@@ -72,27 +72,17 @@ class AppViewModel (driver: MongoDriver, val scope: CoroutineScope) {
 
     //fun newBoard(): Unit = exec(Clash::newBoard)
 
-    fun openStartDialog() {
-        inputName = InputName.ForStart
-    }
-
-    fun openJoinDialog() {
-        inputName = InputName.ForJoin
-    }
-
-
-    fun closeStartOrJoinDialog() { inputName = null }
-
     fun start(name: Name) {
         closeStartOrJoinDialog()
-        exec { start(name) }
+        exec {
+            try {
+                joinClash(name) // Tenta dar join no jogo com o nome especificado
+            } catch (e: Exception) {
+                start(name) // Se o jogo não existir, cria um novo
+            }
+        }
         waitForOtherSide()
     }
-
-    fun join(name: Name) {
-        closeStartOrJoinDialog()
-        exec { joinClash(name) }
-        waitForOtherSide()
-    }
+    fun closeStartOrJoinDialog() { inputName = null }
 
 }
