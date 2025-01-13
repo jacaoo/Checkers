@@ -123,13 +123,11 @@ class Pawn (player: Player) : Piece(player) {
         val list = board.moves.values.toList()
         val possiblemoves2 = mutableListOf<Square>()
 
-        //este if serve apenas teste
-        if(from.index != 17 && from.index > 16) {
-            if (list[(from.index - (BOARD_DIM*2+2))] == null) { // Para vêr se existe kill possível à esquerda
-                if (list[(from.index - (BOARD_DIM+1))] != null) {
-                    if(list[(from.index - (BOARD_DIM+1))]?.player == this.player.other) {
-                        possiblemoves2.add(Square(from.index - (BOARD_DIM*2+2)))
-                    }
+        if (list[(from.index - (BOARD_DIM*2+2))] == null) { // Para vêr se existe kill possível à esquerda
+            if (list[(from.index - (BOARD_DIM+1))] != null) {
+                if(list[(from.index - (BOARD_DIM+1))]?.player == this.player.other) {
+                    possiblemoves2.add(Square(from.index - (BOARD_DIM*2+2)))
+                }
                 }
             }
             if (list[(from.index - (BOARD_DIM*2-2))] == null) { // Para vêr se existe kill possível à direita
@@ -137,7 +135,7 @@ class Pawn (player: Player) : Piece(player) {
                     possiblemoves2.add(Square(from.index - (BOARD_DIM*2-2)))
                 }
             }
-        }
+
         return possiblemoves2
     }
 }

@@ -49,4 +49,5 @@ fun PlayerPreview(){
         PieceView(100.dp, Queen(Player.w))
         PieceView(100.dp, Queen(Player.b))
     }
+
 }

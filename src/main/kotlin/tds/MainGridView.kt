@@ -18,31 +18,27 @@ import tds.view.StatusBar
 fun GridApp() {
     var board: Board by remember { mutableStateOf(BoardRun(initialBoard().moves, turn= Player.w)) }
     var fromSquare by remember { mutableStateOf<Square?>(null) }
-
-    if(board is BoardRun){
-        MaterialTheme {
-            Column() {
-
-                GridView(
-                    board,
-                    onClickCell = { sqr: Square ->
-                        val piece = board.moves[sqr]
-                        if (piece != null && piece.player == (board as BoardRun).turn) {
-                            fromSquare = if (fromSquare == sqr) null else sqr
+    MaterialTheme {
+        Column() {
+            /*
+            GridView(board ,
+                onClickCell = { sqr: Square ->
+                    val piece = board.moves[sqr]
+                    if (piece != null && piece.player == (board as BoardRun).turn) {
+                        fromSquare = if (fromSquare == sqr) null else sqr
+                    }
+                    if (fromSquare != null) {
+                        if (sqr in board.possibleMoves2(fromSquare!!)) {
+                            board = board.play(fromSquare!!, sqr)
+                            fromSquare = null
                         }
-                        if (fromSquare != null) {
-                            if (sqr in board.possibleMoves2(fromSquare!!)) {
-                                board = board.play(fromSquare!!, sqr)
-                                fromSquare = null
-                            }
-                        }
-                    },
-                    selectedSQR = fromSquare
-                )
-                StatusBar(Game())
-            }
+                    }
+                },
+                selectedSQR = fromSquare
+            )
+
+             */
         }
-
     }
 }
 

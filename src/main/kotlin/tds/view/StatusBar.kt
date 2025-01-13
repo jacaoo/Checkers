@@ -23,7 +23,7 @@ import tds.storage.*
 val BACKGROUND_COLOR = Color(180, 100, 25) // cor laranja
 
 @Composable
-fun StatusBar(game: Game){
+fun StatusBar(clash: Clash){
     Row(
         Modifier
             .width(GRID_WIDTH)
@@ -33,44 +33,28 @@ fun StatusBar(game: Game){
 
 
     ){
-        /*
-        if (clash is ClashRun) {
-            Text("Game:${clash.id}")
-            Spacer(Modifier.width(CELL_SIZE*2 + 15.dp))
+        when (clash){
+            is ClashRun -> {
+                Text("Game:${clash.id}")
+                Spacer(Modifier.width(CELL_SIZE*2 + 15.dp))
 
-            if (clash.sideplayer == Player.w) {
-                Text("You:WHITE")
-                Spacer(Modifier.width(CELL_SIZE*2 + 15.dp))
-            } else {
-                Text("You:BLACK")
-                Spacer(Modifier.width(CELL_SIZE*2 + 15.dp))
+                if (clash.sideplayer == Player.w) {
+                    Text("You:WHITE")
+                    Spacer(Modifier.width(CELL_SIZE*2 + 15.dp))
+                } else {
+                    Text("You:BLACK")
+                    Spacer(Modifier.width(CELL_SIZE*2 + 15.dp))
+                }
+                if (clash.game.board is BoardRun) {
+                    if (clash.sideplayer == clash.game.board.turn) {
+                        Text("Your turn")
+                    } else Text("Waiting..")
+                }
             }
-            if (clash.game.board is BoardRun) {
-                if (clash.sideplayer == clash.game.board.turn) {
-                    Text("Your turn")
-                } else Text("Waiting..")
-            }
-        } else {
-            Text("Start a new game")
+            else -> Text("Start a new game")
         }
-
-         */
-        Text("Game:Null")
-        Spacer(Modifier.width(CELL_SIZE*2 + 15.dp))
-        Text("You:WHITE")
-        Spacer(Modifier.width(CELL_SIZE*2 + 15.dp))
-        Text("Your turn")
-
-
     }
 
 }
-
-@Composable
-@Preview
-fun StatusBarPreview() {
-    StatusBar(Game())
-}
-
 
 

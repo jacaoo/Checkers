@@ -13,6 +13,7 @@ enum class InputName(val txt: String) {
 
 @Composable
 fun StartDialog(
+    type: InputName,
     onCancel: ()->Unit,
     onAction: (Name)->Unit
 ) {

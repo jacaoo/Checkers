@@ -176,10 +176,13 @@ fun Board.IsLocked(player: Player): Boolean{
     return true
 
 }
+
+//CORRIGIR ISTO PARA FUNCIONAR NO BLACK E CORRIGIR AS FUNÇÕES ENVOLVIDAS
 fun Board.possibleMoves2(from: Square): List<Square> {
     val piece = this.moves.values.toList()[from.index]
 
     if(piece != null) {
+        /*
         if (!this.ThereIsAtLeastAKill(player)) {
             val list = piece.canMove_nd(from, this.moves)
             for (i in piece.possiblekill(from, this)) {
@@ -193,6 +196,13 @@ fun Board.possibleMoves2(from: Square): List<Square> {
             }
             return list
         }
+
+         */
+        val list = piece.canMove_nd(from, this.moves)
+        for (i in piece.possiblekill(from, this)) {
+            list.add(i)
+        }
+        return list
     }
     return emptyList()// retornar o que der para ser retornado, ja vejo
 }

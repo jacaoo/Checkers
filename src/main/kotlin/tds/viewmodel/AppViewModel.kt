@@ -17,8 +17,13 @@ class AppViewModel (driver: MongoDriver, val scope: CoroutineScope) {
         MongoStorage<Name, Game>("games", driver, GameSerializer)  // Para guardar as coisas na base de dados do Mongo
 
     var clash by mutableStateOf(Clash(storage))  // Clash itself
+
     var inputName by mutableStateOf<InputName?>(null) //StartOrJoinDialog
         private set
+
+
+
+
     var errorMessage by mutableStateOf<String?>(null) //ErrorDialog state
         private set
     var waitingJob by mutableStateOf<Job?>(null) // É utilizado para os tempos de espera entre jogadas de cada player
@@ -30,7 +35,7 @@ class AppViewModel (driver: MongoDriver, val scope: CoroutineScope) {
         get() = (board as? BoardRun)?.turn == sidePlayer || newAvailable
 
 
-    val board : Board get() = (clash as ClashRun).game.board
+    val board : Board? get() = (clash as? ClashRun)?.game?.board
     val hasClash: Boolean get() = clash is ClashRun // Isto vai servir para definir o estado do jogo se o player atual começou um clash
     val sidePlayer: Player? get() = (clash as? ClashRun)?.sideplayer
     val name: Name get() = (clash as ClashRun).id
@@ -72,6 +77,11 @@ class AppViewModel (driver: MongoDriver, val scope: CoroutineScope) {
 
     //fun newBoard(): Unit = exec(Clash::newBoard)
 
+
+    fun openStartDialog() {
+        inputName = InputName.Start
+    }
+
     fun start(name: Name) {
         closeStartOrJoinDialog()
         exec {
@@ -83,6 +93,6 @@ class AppViewModel (driver: MongoDriver, val scope: CoroutineScope) {
         }
         waitForOtherSide()
     }
-    fun closeStartOrJoinDialog() { inputName = null }
+   fun closeStartOrJoinDialog() { inputName = null }
 
 }

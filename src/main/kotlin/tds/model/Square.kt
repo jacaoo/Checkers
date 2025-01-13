@@ -57,3 +57,11 @@ fun Square(row: Row, col: Column): Square {
     return Square.values[row.index * BOARD_DIM + col.index]
 }
 
+fun transformSquare(square: Square, isWhitePlayer: Boolean): Square {
+    return if (isWhitePlayer) {
+        square // Jogador branco vê o tabuleiro normalmente
+    } else {
+        Square(Row((BOARD_DIM - 1) - square.row.index), Column((BOARD_DIM - 1) - square.column.index)) // Tabuleiro invertido para jogador preto
+    }
+}
+
