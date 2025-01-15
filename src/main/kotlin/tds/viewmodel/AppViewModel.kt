@@ -13,7 +13,6 @@ import tds.view.InputName
 class AppViewModel (driver: MongoDriver, val scope: CoroutineScope) {
 
     private val storage =
-        //TextFileStorage<Name, Game>("games", GameSerializer) , isto usa-se quando não queremos gastar as cenas diárias do mongo
         MongoStorage<Name, Game>("games", driver, GameSerializer)  // Para guardar as coisas na base de dados do Mongo
 
     var clash by mutableStateOf(Clash(storage))  // Clash itself
@@ -21,13 +20,9 @@ class AppViewModel (driver: MongoDriver, val scope: CoroutineScope) {
     var inputName by mutableStateOf<InputName?>(null) //StartOrJoinDialog
         private set
 
-
-
-
     var errorMessage by mutableStateOf<String?>(null) //ErrorDialog state
         private set
     var waitingJob by mutableStateOf<Job?>(null) // É utilizado para os tempos de espera entre jogadas de cada player
-    val isWaiting: Boolean get() = waitingJob != null // Complemento da linha de cima
 
     val newAvailable: Boolean get() = clash.canNewBoard()
 
@@ -54,24 +49,37 @@ class AppViewModel (driver: MongoDriver, val scope: CoroutineScope) {
 
     fun play(from : Square, to : Square) {
         exec { play(from, to) }
-        //waitForOtherSide()
+    }
+    private fun waitForOtherSide() {
+        waitingJob = scope.launch(Dispatchers.IO) {
+            while (isActive) { // Verifica continuamente enquanto o Job estiver ativo
+                if (turnAvailable) {
+                    delay(1000) // Evita checagens excessivas
+                } else {
+                    try {
+                        clash = clash.refresh()
+                    } catch (e: NoChangesException) {
+                        /* Ignore */
+                    } catch (e: Exception) {
+                        errorMessage = e.message
+                        if (e is GameDeletedException) clash = Clash(storage)
+                    }
+                    delay(1000) // Espera antes da prÃ³xima tentativa
+                }
+            }
+        }
     }
 
-    private fun waitForOtherSide() {
-        if (turnAvailable) return
-        waitingJob = scope.launch(Dispatchers.IO) {
-            do {
-                delay(3000)
-                try { clash = clash.refresh() }
-                catch (e: NoChangesException) { /* Ignore */ }
-                catch (e: Exception) {
-                    errorMessage = e.message
-                    if (e is GameDeletedException) clash = Clash(storage)
-                }
-            } while (!turnAvailable)
+    fun autorefresh(enabled: Boolean) {
+        if (enabled && waitingJob == null) {
+            waitForOtherSide()
+        } else {
+            waitingJob?.cancel() // Cancela o Job atual se desativado
             waitingJob = null
         }
     }
+
+
 
     fun refresh() = exec(Clash::refresh)
 
@@ -91,7 +99,7 @@ class AppViewModel (driver: MongoDriver, val scope: CoroutineScope) {
                 start(name) // Se o jogo não existir, cria um novo
             }
         }
-        waitForOtherSide()
+        //waitForOtherSide()
     }
    fun closeStartOrJoinDialog() { inputName = null }
 

@@ -71,7 +71,7 @@ class Queen(player: Player ): Piece(player) {
                             board.moves.values.toList()[board.moves.keys.indexOf(from) + BOARD_DIM + 1] == null) )return true
         else return false
     }
-    override fun canMove_nd(from: Square, moves: Moves): MutableList<Square> {
+    override fun canMove_nd(from: Square, board: Board): MutableList<Square> {
 
         val steppers = arrayOf((BOARD_DIM-1), -(BOARD_DIM-1), (BOARD_DIM+1), -(BOARD_DIM+1))
         val possibleMoves = mutableListOf<Square>()
@@ -80,10 +80,10 @@ class Queen(player: Player ): Piece(player) {
             for (j in 1..BOARD_DIM) {
                 val num = from.index +( i * j)
                 if (num in 0..<BOARD_CELLS) {
-                    val squareToCheck = moves.keys.toList()[from.index + (i * j)].index
-                    if (moves.values.toList()[squareToCheck] == null && moves.keys.toList()[squareToCheck].black) {
-                        println(moves.keys.toList()[from.index + (i * j)])
-                        possibleMoves.add(moves.keys.toList()[from.index + (i * j)])
+                    val squareToCheck = board.moves.keys.toList()[from.index + (i * j)].index
+                    if (board.moves.values.toList()[squareToCheck] == null && board.moves.keys.toList()[squareToCheck].black) {
+                        println(board.moves.keys.toList()[from.index + (i * j)])
+                        possibleMoves.add(board.moves.keys.toList()[from.index + (i * j)])
                     } else {
                         break
                     }
@@ -103,19 +103,18 @@ class Queen(player: Player ): Piece(player) {
 
         for (i in steppers) {
             for (j in 1..BOARD_DIM) {
-                val num = from.index +( i * j)
+                val num = from.index + (i * j)
                 if (num in 0..<BOARD_CELLS) {
                     val squareToCheck = boardListSquare[from.index + (i * j)].index
                     if (boardListPiece[squareToCheck] == null && boardListSquare[squareToCheck].black) {
-
                         //possibleMoves.add(board.moves.keys.toList()[from.index + (i * j)])
                     } else {
                         val check = squareToCheck + i
                         if (boardListSquare[squareToCheck].black && check in 0..<BOARD_CELLS) {
-                            if (boardListPiece[check] == null && boardListSquare[check].black) {
+                            if (boardListPiece[check] == null && boardListSquare[check].black ) {
                                 possiblekills.add(boardListSquare[check])
-                                break
                             }
+                            break
                         }
                         else break
                     }
@@ -129,23 +128,23 @@ class Queen(player: Player ): Piece(player) {
 }
 fun CheckLimits(from : Square, stepper: Int, board: Board) : Int{// returns an int based on the quadrant/diagonal (stepper), this functions calculates the amount of squares on that diagonal based on the row and column of the fromSquare
 
-    if (stepper == -7) { // 1ºQ
+    if (stepper == -(BOARD_DIM-1)) { // 1ºQ
         val difRow = board.moves.keys.toList()[from.index].row.index
-        val difColumn = 7 - board.moves.keys.toList()[from.index].column.index
+        val difColumn = (BOARD_DIM-1) - board.moves.keys.toList()[from.index].column.index
         return if (difColumn > difRow) difRow else difColumn
 
-    } else if (stepper == 9) {//4ºQ
-        val difRow = 7 - board.moves.keys.toList()[from.index].row.index
-        val difColumn = 7 - board.moves.keys.toList()[from.index].column.index
+    } else if (stepper == (BOARD_DIM + 1)) {//4ºQ
+        val difRow = (BOARD_DIM-1) - board.moves.keys.toList()[from.index].row.index
+        val difColumn = (BOARD_DIM-1) - board.moves.keys.toList()[from.index].column.index
         return if (difColumn > difRow) difRow else difColumn
 
-    } else if (stepper == -9) {// 2ªQ
+    } else if (stepper == -(BOARD_DIM+1)) {// 2ªQ
         val difRow = board.moves.keys.toList()[from.index].row.index
         val difColumn = board.moves.keys.toList()[from.index].column.index
         return if (difColumn > difRow) difRow else difColumn
 
     } else {// 3ªQ
-        val difRow = 7 - board.moves.keys.toList()[from.index].row.index
+        val difRow =(BOARD_DIM-1) - board.moves.keys.toList()[from.index].row.index
         val difColumn = board.moves.keys.toList()[from.index].column.index
         return  if (difColumn > difRow) difRow else difColumn
     }

@@ -46,7 +46,7 @@ fun String.toPlayer(): Player =
 
 fun Board.play(from: Square, to: Square): Board =
     when (this) {
-        is BoardWin -> error("Game is over") // nunca vai funcionar pq precisa de uma nova iteração
+        is BoardWin -> error("Game is over")
         is BoardRun -> {
             if(this.FromSequenceMandatory != null) {
                 require(from == this.FromSequenceMandatory ){"there is a mandatory sequence in $from"}
@@ -60,7 +60,7 @@ fun Board.play(from: Square, to: Square): Board =
                 val actualPiece = this.moves.values.toList()[from.index]
                 val newBoard = this.exchangekill(from, to)
 
-                if (actualPiece!= null && actualPiece.genericCanKill(to, newBoard)) { //corrigir o problema de quando tens varias kills possiveis e trocas de turn
+                if (actualPiece!= null && actualPiece.genericCanKill(to, newBoard)) {
                     BoardRun(newBoard.moves, newBoard.player, to).CheckWin(player)
                 }
                 else  BoardRun(newBoard.moves, newBoard.player.other).CheckWin(player)
@@ -177,32 +177,16 @@ fun Board.IsLocked(player: Player): Boolean{
 
 }
 
-//CORRIGIR ISTO PARA FUNCIONAR NO BLACK E CORRIGIR AS FUNÇÕES ENVOLVIDAS
+
 fun Board.possibleMoves2(from: Square): List<Square> {
     val piece = this.moves.values.toList()[from.index]
 
     if(piece != null) {
-        /*
         if (!this.ThereIsAtLeastAKill(player)) {
-            val list = piece.canMove_nd(from, this.moves)
-            for (i in piece.possiblekill(from, this)) {
-                list.add(i)
-            }
-            return list
+            return piece.canMove_nd(from, this)
         } else {
-            val list = mutableListOf<Square>()
-            for (i in piece.possiblekill(from, this)) {
-                list.add(i)
-            }
-            return list
+            return piece.possiblekill(from, this)
         }
-
-         */
-        val list = piece.canMove_nd(from, this.moves)
-        for (i in piece.possiblekill(from, this)) {
-            list.add(i)
-        }
-        return list
     }
     return emptyList()// retornar o que der para ser retornado, ja vejo
 }

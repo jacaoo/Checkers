@@ -27,31 +27,57 @@ fun StatusBar(clash: Clash){
     Row(
         Modifier
             .width(GRID_WIDTH)
-            .background(BACKGROUND_COLOR),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center
-
-
+            .height(40.dp)
+            .background(BACKGROUND_COLOR)
+            .offset(x= 23.dp),
     ){
         when (clash){
             is ClashRun -> {
-                Text("Game:${clash.id}")
-                Spacer(Modifier.width(CELL_SIZE*2 + 15.dp))
+                Text(
+                    text = "Game:${clash.id}",
+                    fontSize = 20.sp
+                )
+                Spacer(Modifier.width(CELL_SIZE+ CELL_SIZE/2))
 
                 if (clash.sideplayer == Player.w) {
-                    Text("You:WHITE")
-                    Spacer(Modifier.width(CELL_SIZE*2 + 15.dp))
+                    Text(
+                        text = "You:WHITE",
+                        fontSize = 20.sp
+                    )
+                    Spacer(Modifier.width(CELL_SIZE+ CELL_SIZE/2))
                 } else {
-                    Text("You:BLACK")
-                    Spacer(Modifier.width(CELL_SIZE*2 + 15.dp))
+                    Text(
+                        text = "You:BLACK",
+                        fontSize = 20.sp
+                    )
+                    Spacer(Modifier.width(CELL_SIZE + CELL_SIZE/2))
                 }
                 if (clash.game.board is BoardRun) {
                     if (clash.sideplayer == clash.game.board.turn) {
-                        Text("Your turn")
-                    } else Text("Waiting..")
+                        Text(
+                            text = "Your turn",
+                            fontSize = 20.sp
+                        )
+                    } else Text(
+                        text = "Waiting..",
+                        fontSize = 20.sp
+                    )
+                } else if (clash.game.board is BoardWin) {
+                    if (clash.sideplayer == clash.game.board.winner) {
+                        Text(
+                            text = "You Win",
+                            fontSize = 20.sp
+                        )
+                    } else Text(
+                        text = "You Lose",
+                        fontSize = 20.sp
+                    )
                 }
             }
-            else -> Text("Start a new game")
+            else -> Text(
+                text = "Start a new game",
+                fontSize = 20.sp
+            )
         }
     }
 

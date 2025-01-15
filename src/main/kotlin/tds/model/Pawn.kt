@@ -53,29 +53,29 @@ class Pawn (player: Player) : Piece(player) {
         require(board.moves.values.toList()[board.moves.keys.indexOf(from)] != null){"Checking wrong square"}
 
         if (player == Player.w && board.moves.keys.toList()[from.index].row.index > 1 ){
-            val NextLeft = board.moves.values.toList()[board.moves.keys.indexOf(from) - BOARD_DIM -1]
-            val NextRigth = board.moves.values.toList()[board.moves.keys.indexOf(from) - BOARD_DIM +1]
+            val NextLeft = board.moves.values.toList()[board.moves.keys.indexOf(from) - (BOARD_DIM -1)]
+            val NextRigth = board.moves.values.toList()[board.moves.keys.indexOf(from) - (BOARD_DIM +1)]
 
             return (NextLeft ?.player == player.other
-                    && board.moves.values.toList()[board.moves.keys.indexOf(from) - BOARD_DIM * 2 - 2] == null
-                    && board.moves.keys.toList()[board.moves.keys.indexOf(from) - BOARD_DIM * 2 - 2].black
+                    && board.moves.values.toList()[board.moves.keys.indexOf(from) - (BOARD_DIM * 2 - 2)] == null
+                    && board.moves.keys.toList()[board.moves.keys.indexOf(from) - (BOARD_DIM * 2 - 2)].black
                     ||
                     NextRigth ?.player == player.other
-                    && board.moves.values.toList()[board.moves.keys.indexOf(from) - BOARD_DIM * 2 +2] == null
-                    && board.moves.keys.toList()[board.moves.keys.indexOf(from) - BOARD_DIM * 2 +2].black)
+                    && board.moves.values.toList()[board.moves.keys.indexOf(from) - (BOARD_DIM * 2 +2)] == null
+                    && board.moves.keys.toList()[board.moves.keys.indexOf(from) - (BOARD_DIM * 2 +2)].black)
 
         }else{
-            if( board.moves.keys.toList()[from.index].row.index < 6) {
-                val NextLeft = board.moves.values.toList()[board.moves.keys.indexOf(from) + BOARD_DIM - 1]
-                val NextRigth = board.moves.values.toList()[board.moves.keys.indexOf(from) + BOARD_DIM + 1]
+            if( board.moves.keys.toList()[from.index].row.index < (BOARD_DIM-2)) {
+                val NextLeft = board.moves.values.toList()[board.moves.keys.indexOf(from) + (BOARD_DIM - 1)]
+                val NextRigth = board.moves.values.toList()[board.moves.keys.indexOf(from) + (BOARD_DIM + 1)]
 
                 return (NextLeft?.player == player.other
-                        && board.moves.values.toList()[board.moves.keys.indexOf(from) + BOARD_DIM * 2 - 2] == null
-                        && board.moves.keys.toList()[board.moves.keys.indexOf(from) + BOARD_DIM * 2 - 2].black
+                        && board.moves.values.toList()[board.moves.keys.indexOf(from) + (BOARD_DIM * 2 - 2)] == null
+                        && board.moves.keys.toList()[board.moves.keys.indexOf(from) + (BOARD_DIM * 2 - 2)].black
                         ||
                         NextRigth?.player == player.other
-                        && board.moves.values.toList()[board.moves.keys.indexOf(from) + BOARD_DIM * 2 + 2] == null
-                        && board.moves.keys.toList()[board.moves.keys.indexOf(from) + BOARD_DIM * 2 + 2].black)
+                        && board.moves.values.toList()[board.moves.keys.indexOf(from) + (BOARD_DIM * 2 + 2)] == null
+                        && board.moves.keys.toList()[board.moves.keys.indexOf(from) + (BOARD_DIM * 2 + 2)].black)
             }
             return false
         }
@@ -84,60 +84,99 @@ class Pawn (player: Player) : Piece(player) {
     override fun genericCanMove(from: Square, board: Board): Boolean { // testar ainda
         if (player == Player.w) {
             if (board.moves.keys.toList()[board.moves.keys.indexOf(from)].row.index != 0 // apenas para garantir
-                && (board.moves.values.toList()[board.moves.keys.indexOf(from) - BOARD_DIM - 1] == null ||
-                        board.moves.values.toList()[board.moves.keys.indexOf(from) - BOARD_DIM + 1] == null)
+                && (board.moves.values.toList()[board.moves.keys.indexOf(from) - (BOARD_DIM - 1)] == null ||
+                        board.moves.values.toList()[board.moves.keys.indexOf(from) - (BOARD_DIM + 1)] == null)
             ) return true
             else return false
 
         } else {
-            if (board.moves.keys.toList()[board.moves.keys.indexOf(from)].row.index != BOARD_DIM - 1 // apenas para garantir
-                && (board.moves.values.toList()[board.moves.keys.indexOf(from) + BOARD_DIM - 1] == null ||
-                        board.moves.values.toList()[board.moves.keys.indexOf(from) + BOARD_DIM + 1] == null)
+            if (board.moves.keys.toList()[board.moves.keys.indexOf(from)].row.index != (BOARD_DIM - 1) // apenas para garantir
+                && (board.moves.values.toList()[board.moves.keys.indexOf(from) + (BOARD_DIM - 1)] == null ||
+                        board.moves.values.toList()[board.moves.keys.indexOf(from) + (BOARD_DIM + 1)] == null)
             ) return true
             else return false
 
         }
     }
-    override fun canMove_nd(from: Square, moves: Moves): MutableList<Square> {
+    override fun canMove_nd(from: Square, board: Board): MutableList<Square> {
         val possibleMoves = mutableListOf<Square>()
 
-        val fromSquare = moves.values.toList()[from.index]
+        val fromSquare = board.moves.values.toList()[from.index]
+
         if (fromSquare != null) {
             val board_dim = getBycolour(fromSquare)
             val leftDiagonal = from.index - board_dim - 1
             val rightDiagonal = from.index - board_dim + 1
-            if (moves.values.toList()[rightDiagonal] == null && moves.keys.toList()[rightDiagonal].black) {
-                possibleMoves.add(moves.keys.toList()[rightDiagonal])
+            if (rightDiagonal in 0..<BOARD_CELLS) {
+                if (board.moves.values.toList()[rightDiagonal] == null && board.moves.keys.toList()[rightDiagonal].black) {
+                    possibleMoves.add(board.moves.keys.toList()[rightDiagonal])
+                }
             }
-            if (moves.values.toList()[leftDiagonal] == null && moves.keys.toList()[leftDiagonal].black) {
-                possibleMoves.add(moves.keys.toList()[leftDiagonal])
+            if (leftDiagonal in 0..<BOARD_CELLS) {
+                if (board.moves.values.toList()[leftDiagonal] == null && board.moves.keys.toList()[leftDiagonal].black) {
+                    possibleMoves.add(board.moves.keys.toList()[leftDiagonal])
+                }
             }
             return possibleMoves
         }
-        else{
-            return mutableListOf<Square>()
-        }
+        return mutableListOf<Square>()
     }
 
     override fun possiblekill(from: Square, board: Board): List<Square> {
-        val list = board.moves.values.toList()
+        val listpieces = board.moves.values.toList()
+        val listsquares = board.moves.keys.toList()
         val possiblemoves2 = mutableListOf<Square>()
+        val leftspace = BOARD_DIM * 2 + 2
+        val leftkill = BOARD_DIM + 1
+        val rightkill = BOARD_DIM - 1
+        val rightspace = BOARD_DIM * 2 - 2
 
-        if (list[(from.index - (BOARD_DIM*2+2))] == null) { // Para vêr se existe kill possível à esquerda
-            if (list[(from.index - (BOARD_DIM+1))] != null) {
-                if(list[(from.index - (BOARD_DIM+1))]?.player == this.player.other) {
-                    possiblemoves2.add(Square(from.index - (BOARD_DIM*2+2)))
-                }
+
+
+        if (board.player == Player.w) {
+            if (leftspace in 0..<BOARD_CELLS){
+                if (listpieces[from.index - leftspace] == null && listsquares[from.index - leftspace].black) { // Para vêr se existe kill possível à esquerda e se o quadrado é válido
+                    if (listpieces[from.index - leftkill] != null) {
+                        if(listpieces[from.index - leftkill]?.player == this.player.other) {
+                            possiblemoves2.add(Square(from.index - leftspace))
+                        }
+                    }
                 }
             }
-            if (list[(from.index - (BOARD_DIM*2-2))] == null) { // Para vêr se existe kill possível à direita
-                if(list[(from.index - (BOARD_DIM-1))]?.player == this.player.other) {
-                    possiblemoves2.add(Square(from.index - (BOARD_DIM*2-2)))
+            if (rightspace in 0..<BOARD_CELLS){
+                if (listpieces[from.index - rightspace] == null && listsquares[from.index - rightspace].black) { // Para vêr se existe kill possível à direita
+                    if (listpieces[(from.index - rightkill)] != null) {
+                        if (listpieces[from.index - rightkill]?.player == this.player.other) {
+                            possiblemoves2.add(Square(from.index-rightspace))
+                        }
+                    }
                 }
             }
 
+        } else {
+            if (leftspace in 0..<BOARD_CELLS){
+                if (listpieces[from.index + leftspace] == null && listsquares[from.index + leftspace].black) { // Para vêr se existe kill possível à direita
+                    if (listpieces[from.index + leftkill] != null) {
+                        if(listpieces[from.index + leftkill]?.player == this.player.other) {
+                            possiblemoves2.add(Square(from.index + leftspace))
+                        }
+                    }
+                }
+            }
+            if (rightspace in 0..<BOARD_CELLS){
+                if (listpieces[from.index + rightspace] == null && listsquares[from.index + rightspace].black) { // Para vêr se existe kill possível à direita
+                    if (listpieces[from.index + rightkill] != null) {
+                        if (listpieces[from.index + rightkill]?.player == this.player.other) {
+                            possiblemoves2.add(Square(from.index + rightspace))
+                        }
+                    }
+                }
+            }
+
+        }
         return possiblemoves2
     }
+
 }
 
 fun getPawn(sq: Square) : Pawn?{

@@ -4,8 +4,6 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import tds.model.Name
 
-
-//Isto vai servir para o Jogador novo criar um jogo com um específico nome ou então para um outro jogador entrar com esse mesmo nome
 enum class InputName(val txt: String) {
     Start("start")
 }
