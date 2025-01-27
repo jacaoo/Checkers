@@ -33,15 +33,37 @@ fun GridView(onClickCell: (Square) -> Unit, selectedSQR: Square?, clash: Clash, 
             //verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(CELL_SIZE - 10.dp)// Simplesmente para fazer o espaço entre cada letra
         ) {
-
-            for (i in 0..<BOARD_DIM) {
-                val actualLetter = ('a' + i).toString()
-                Text(
-                    text = actualLetter,
-                    fontSize = 18.sp,
-                    //padding = (start = CELL_SIZE - LINE_WIDTH)
-                )
+            if (clash is ClashRun) {
+                if(clash.sideplayer == Player.w) {
+                    for (i in 0..<BOARD_DIM) {
+                        val actualLetter = ('a' + i).toString()
+                        Text(
+                            text = actualLetter,
+                            fontSize = 18.sp,
+                            //padding = (start = CELL_SIZE - LINE_WIDTH)
+                        )
+                    }
+                } else {
+                    for (i in (BOARD_DIM-1)downTo 0) {
+                        val actualLetter = ('a' + i).toString()
+                        Text(
+                            text = actualLetter,
+                            fontSize = 18.sp,
+                            //padding = (start = CELL_SIZE - LINE_WIDTH)
+                        )
+                    }
+                }
+            } else {
+                for (i in 0..<BOARD_DIM) {
+                    val actualLetter = ('a' + i).toString()
+                    Text(
+                        text = actualLetter,
+                        fontSize = 18.sp,
+                        //padding = (start = CELL_SIZE - LINE_WIDTH)
+                    )
+                }
             }
+
 
         }
         Column (

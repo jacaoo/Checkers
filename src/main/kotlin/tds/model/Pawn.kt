@@ -55,27 +55,50 @@ class Pawn (player: Player) : Piece(player) {
         if (player == Player.w && board.moves.keys.toList()[from.index].row.index > 1 ){
             val NextLeft = board.moves.values.toList()[board.moves.keys.indexOf(from) - (BOARD_DIM -1)]
             val NextRigth = board.moves.values.toList()[board.moves.keys.indexOf(from) - (BOARD_DIM +1)]
+            val NextLeftIndex = board.moves.keys.toList()[board.moves.keys.indexOf(from) - (BOARD_DIM -1)]
+            val NextRightIndex = board.moves.keys.toList()[board.moves.keys.indexOf(from) - (BOARD_DIM +1)]
 
-            return (NextLeft ?.player == player.other
-                    && board.moves.values.toList()[board.moves.keys.indexOf(from) - (BOARD_DIM * 2 - 2)] == null
-                    && board.moves.keys.toList()[board.moves.keys.indexOf(from) - (BOARD_DIM * 2 - 2)].black
-                    ||
-                    NextRigth ?.player == player.other
-                    && board.moves.values.toList()[board.moves.keys.indexOf(from) - (BOARD_DIM * 2 +2)] == null
-                    && board.moves.keys.toList()[board.moves.keys.indexOf(from) - (BOARD_DIM * 2 +2)].black)
+            return if((NextRightIndex.index - (BOARD_DIM + 1)) !in 0..<BOARD_CELLS) {
+               (NextLeft ?.player == player.other
+                        && board.moves.values.toList()[board.moves.keys.indexOf(from) - (BOARD_DIM * 2 - 2)] == null
+                        && board.moves.keys.toList()[board.moves.keys.indexOf(from) - (BOARD_DIM * 2 - 2)].black)
+            } else if (NextLeftIndex.index - (BOARD_DIM - 1) !in 0..<BOARD_CELLS) {
+                    (NextRigth ?.player == player.other && board.moves.values.toList()[board.moves.keys.indexOf(from) - (BOARD_DIM * 2 +2)] == null
+                            && board.moves.keys.toList()[board.moves.keys.indexOf(from) - (BOARD_DIM * 2 +2)].black)
+            } else {
+                (NextLeft?.player == player.other
+                        && board.moves.values.toList()[board.moves.keys.indexOf(from) - (BOARD_DIM * 2 - 2)] == null
+                        && board.moves.keys.toList()[board.moves.keys.indexOf(from) - (BOARD_DIM * 2 - 2)].black
+                        ||
+                        NextRigth?.player == player.other
+                        && board.moves.values.toList()[board.moves.keys.indexOf(from) - (BOARD_DIM * 2 + 2)] == null
+                        && board.moves.keys.toList()[board.moves.keys.indexOf(from) - (BOARD_DIM * 2 + 2)].black)
+            }
 
         }else{
             if( board.moves.keys.toList()[from.index].row.index < (BOARD_DIM-2)) {
                 val NextLeft = board.moves.values.toList()[board.moves.keys.indexOf(from) + (BOARD_DIM - 1)]
                 val NextRigth = board.moves.values.toList()[board.moves.keys.indexOf(from) + (BOARD_DIM + 1)]
+                val NextLeftIndex = board.moves.keys.toList()[board.moves.keys.indexOf(from) + (BOARD_DIM -1)]
+                val NextRightIndex = board.moves.keys.toList()[board.moves.keys.indexOf(from) + (BOARD_DIM +1)]
 
-                return (NextLeft?.player == player.other
-                        && board.moves.values.toList()[board.moves.keys.indexOf(from) + (BOARD_DIM * 2 - 2)] == null
-                        && board.moves.keys.toList()[board.moves.keys.indexOf(from) + (BOARD_DIM * 2 - 2)].black
-                        ||
-                        NextRigth?.player == player.other
-                        && board.moves.values.toList()[board.moves.keys.indexOf(from) + (BOARD_DIM * 2 + 2)] == null
-                        && board.moves.keys.toList()[board.moves.keys.indexOf(from) + (BOARD_DIM * 2 + 2)].black)
+                return if (NextLeftIndex.index + (BOARD_DIM - 1 ) !in 0..<BOARD_CELLS) {
+                    (NextRigth?.player == player.other
+                            && board.moves.values.toList()[board.moves.keys.indexOf(from) + (BOARD_DIM * 2 + 2)] == null
+                            && board.moves.keys.toList()[board.moves.keys.indexOf(from) + (BOARD_DIM * 2 + 2)].black)
+                } else if (NextRightIndex.index + (BOARD_DIM + 1) !in 0..<BOARD_CELLS) {
+                    NextLeft?.player == player.other
+                            && board.moves.values.toList()[board.moves.keys.indexOf(from) + (BOARD_DIM * 2 - 2)] == null
+                            && board.moves.keys.toList()[board.moves.keys.indexOf(from) + (BOARD_DIM * 2 - 2)].black
+                } else {
+                    (NextLeft?.player == player.other
+                            && board.moves.values.toList()[board.moves.keys.indexOf(from) + (BOARD_DIM * 2 - 2)] == null
+                            && board.moves.keys.toList()[board.moves.keys.indexOf(from) + (BOARD_DIM * 2 - 2)].black
+                            ||
+                            NextRigth?.player == player.other
+                            && board.moves.values.toList()[board.moves.keys.indexOf(from) + (BOARD_DIM * 2 + 2)] == null
+                            && board.moves.keys.toList()[board.moves.keys.indexOf(from) + (BOARD_DIM * 2 + 2)].black)
+                }
             }
             return false
         }
